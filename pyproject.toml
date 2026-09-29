@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ytgrab"
+dynamic = ["version"]
+description = "A simple Windows-first desktop app for downloading YouTube content you have permission to download."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+# yt-dlp has no upper limit on purpose: YouTube changes often, so old versions break.
+dependencies = [
+    "yt-dlp>=2025.1.1",
+]
+
+[project.optional-dependencies]
+# Install with: pip install -e ".[dev]"
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.6",
+]
+
+[tool.setuptools.dynamic]
+version = { attr = "ytgrab.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+# E/W: pycodestyle, F: pyflakes (unused imports/variables), I: import sorting
+select = ["E", "W", "F", "I"]

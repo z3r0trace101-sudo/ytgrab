@@ -1,0 +1,35 @@
+name: CI
+
+# Keeps the core/UI-independent logic honest on both platforms and catches
+# regressions before a release tag is cut. There is deliberately no
+# build/packaging job here: ytgrab is distributed as source and fetched at
+# run time by scripts/run.ps1 (see README "Cutting a release"), so there is
+# no separate executable artifact to build for this project to work.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+        python-version: ["3.11", "3.12", "3.13"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install ytgrab with dev dependencies
+        run: pip install -e ".[dev]"
+
+      - name: Lint (ruff)
+        run: ruff check .
+
+      - name: Test (pytest)
+        run: pytest
